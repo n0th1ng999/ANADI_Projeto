@@ -10,34 +10,35 @@
 ## 📋 Plano de Trabalho
 
 ### Etapa 1: Configuração e Preparação Inicial
-* [ ] **Tarefa 1.1:** Criar o repositório privado no GitHub e partilhar o acesso com os professores das PL.
-* [ ] **Tarefa 1.2:** Configurar o ambiente de trabalho local e descarregar o ficheiro de dados PTD_level_dataset.xlsx.
-* [ ] **Tarefa 1.3:** Configurar o documento do artigo com o template IEEE (Word ou LaTeX).
+* [X] **Tarefa 1.1:** Criar o repositório privado no GitHub e partilhar o acesso com os professores das PL.
+* [X] **Tarefa 1.2:** Configurar o ambiente de trabalho local e descarregar o ficheiro de dados PTD_level_dataset.xlsx.
+* [X] **Tarefa 1.3:** Configurar o documento do artigo com o template IEEE (Word ou LaTeX).
 
 ### Etapa 2: Análise Exploratória e Pré-Processamento
-* [ ] **Tarefa 2.1:** Carregar os dados em Python, verificar a dimensão do dataset e gerar um sumário estatístico.
-* [ ] **Tarefa 2.2:** Criar os gráficos mais adequados para explorar visualmente as variáveis.
-* [ ] **Tarefa 2.3:** Realizar o pré-processamento dos dados:
-  * [ ] Tratamento de valores omissos.
-  * [ ] Transformação de variáveis categóricas.
-  * [ ] Normalização ou standardização onde necessário.
-  * [ ] Seleção de variáveis relevantes para a modelação.
+* [X] **Tarefa 2.1:** Carregar os dados em Python, verificar a dimensão do dataset e gerar um sumário estatístico.
+* [X] **Tarefa 2.2:** Criar os gráficos mais adequados para explorar visualmente as variáveis.
+* [X] **Tarefa 2.3:** Realizar o pré-processamento dos dados:
+  * [X] Tratamento de valores omissos.
+  * [X] Transformação de variáveis categóricas.
+  * [X] Normalização ou standardização onde necessário.
+  * [X] Seleção de variáveis relevantes para a modelação.
 
 ### Etapa 3: Desenvolvimento dos Modelos de Regressão
 *O objetivo é prever o valor contínuo da variável PFolga_PTD usando a técnica de k-fold cross validation.*
 
-* [ ] **Tarefa 3.1:** Criar e interpretar o diagrama de correlação entre PFolga_PTD e as restantes variáveis.
-* [ ] **Tarefa 3.2:** Desenvolver o modelo de Regressão Linear Simples com uma variável explicativa relevante:
+* [X] **Tarefa 3.1:** Criar e interpretar o diagrama de correlação entre PFolga_PTD e as restantes variáveis.
+* [X] **Tarefa 3.2:** Remover variáveis que não fazem sentido para o modelo de regressão
+* [ ] **Tarefa 3.3:** Desenvolver o modelo de Regressão Linear Simples com uma variável explicativa relevante:
   * [ ] Apresentar a função linear resultante.
   * [ ] Desenhar a reta no diagrama de dispersão.
   * [ ] Calcular os erros MAE e RMSE.
-* [ ] **Tarefa 3.3:** Desenvolver e otimizar os modelos avançados através de k-fold:
+* [ ] **Tarefa 3.4:** Desenvolver e otimizar os modelos avançados através de k-fold:
   * [ ] Regressão Linear Múltipla.
   * [ ] Árvore de Regressão (e visualizar a árvore obtida).
   * [ ] SVM (otimizar o kernel).
   * [ ] Rede Neuronal (testar 3 configurações, desenhar curvas de loss de treino/validação e discutir o impacto da learning rate e do early stopping).
-* [ ] **Tarefa 3.4:** Comparar todos os modelos usando MAE e RMSE, identificar as variáveis mais relevantes e gerar as curvas de aprendizagem para os dois melhores modelos.
-* [ ] **Tarefa 3.5:** Aplicar testes estatísticos adequados (nível de significância de 5%) para validar o desempenho dos dois melhores modelos.
+* [ ] **Tarefa 3.5:** Comparar todos os modelos usando MAE e RMSE, identificar as variáveis mais relevantes e gerar as curvas de aprendizagem para os dois melhores modelos.
+* [ ] **Tarefa 3.6:** Aplicar testes estatísticos adequados (nível de significância de 5%) para validar o desempenho dos dois melhores modelos.
 
 ### Etapa 4: Desenvolvimento dos Modelos de Classificação
 *O objetivo é prever o nível de ocupação criando a variável utilizRede (baixo, médio, alto) a partir de Util_Decimal, usando k-fold cross validation.*

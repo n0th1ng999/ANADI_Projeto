@@ -1,0 +1,92 @@
+\section{Análise dos resultados obtidos}
+
+Esta secção apresenta uma leitura crítica dos resultados obtidos no trabalho sobre eficiência energética na iluminação pública e viabilidade de carregadores para veículos elétricos. A análise foi estruturada para manter alinhamento com o documento final entregue em PDF (\textit{TrabalhoANADI2526-3-3.pdf}) e, ao mesmo tempo, usar como fonte numérica principal os outputs reproduzidos no notebook, por serem a referência computacional diretamente verificável.
+
+\subsection{4.4. Inferência Estatística}
+
+O dataset consolidado inclui 278 concelhos e não apresenta valores omissos nas variáveis finais de análise. Este ponto é importante porque reduz o risco de viés introduzido por imputação ou por remoção seletiva de observações. A potência total de iluminação pública observada foi de 180507.87 kW, dos quais 61708.66 kW (34.2\%) correspondem a tecnologia ineficiente (sódio/mercúrio). Este resultado sustenta, de forma objetiva, a ideia central do trabalho: existe uma margem técnica real para ganhos com modernização LED.
+
+Em paralelo, a rede apresenta utilização média de aproximadamente 0.5103 (51.03\%), valor confortavelmente abaixo de patamares de saturação operativa. Em termos práticos, a combinação de (i) margem de utilização e (ii) quota relevante de potência ineficiente cria um contexto favorável para políticas combinadas de eficiência e eletrificação da mobilidade.
+
+\subsubsection{4.4.1 Amostra aleatória de 50 concelhos e teste unilateral à média (patamar 60\%)}
+No teste t unilateral para uma amostra (n=50), obteve-se média amostral de 0.5063, estatística t=-8.6663 e \textit{p-value} praticamente nulo (\(<0.0001\)). O intervalo de confiança a 95\% foi [0.4845, 0.5280]. Como todo o intervalo fica abaixo de 0.60, a conclusão de ocupação média inferior a 60\% não depende apenas do teste de hipótese, mas também de estimação intervalar consistente. Esta convergência aumenta a robustez da interpretação.
+
+\subsubsection{4.4.2 Duas amostras aleatórias de 30 registos (Modernizados vs. Ineficientes)}
+No teste t para duas amostras independentes (30 vs. 30), a diferença observada entre médias foi pequena (0.5028 vs. 0.5183), com \textit{p-value}=0.3071, sem evidência estatística para rejeitar igualdade de médias. O tamanho de efeito (Cohen's d=-0.2661) é de baixa magnitude. Este resultado é relevante porque evita uma inferência simplista: mais ineficiência de iluminação não implica, por si só, ocupação média significativamente maior da rede em comparação direta entre os grupos definidos.
+
+\subsubsection{4.4.3 Três amostras aleatórias de 25 concelhos (ANOVA + pós-hoc)}
+A ANOVA mostrou diferenças significativas entre regiões (\textit{p-value}<0.0001). As médias observadas foram:
+\[
+\mu_{Norte/Centro} = 0.5483,\quad
+\mu_{Lisboa/Litoral\ Sul} = 0.5123,\quad
+\mu_{Interior/Alentejo} = 0.4423.
+\]
+No pós-hoc de Tukey, o grupo Interior/Alentejo difere de forma significativa dos outros dois, enquanto Norte/Centro e Lisboa/Litoral Sul ficaram em zona limite (\textit{p-adj}=0.0546). Logo, a heterogeneidade territorial existe, mas não de forma uniforme entre todos os pares regionais. Esta nuance é importante para planeamento: a priorização geográfica deve ser seletiva e não baseada apenas em médias globais.
+
+\subsubsection{4.4.4 Relação linear entre capacidade instalada e carga de iluminação pública (Pearson)}
+A correlação de Pearson entre \textit{Cap\_PTD} e \textit{P\_IP\_Total} foi muito forte e positiva (r=0.9111, \textit{p-value}<0.000001), com \(R^2\approx 0.8301\). Isto indica associação linear intensa: concelhos com maior capacidade instalada tendem a apresentar maior carga de iluminação. Todavia, esta relação não deve ser lida como causalidade direta; pode refletir dimensão urbana, densidade de consumidores e escala da infraestrutura.
+
+\subsection{4.5. Correlação e Regressão -- Modelo Preditivo}
+
+\subsubsection{4.5.1 Modelo de regressão linear múltipla para Y em função de X1, X2 e X3}
+
+O modelo estimado foi:
+\[
+\text{Util\_Media} = \beta_0 + \beta_1\,\text{P\_IP\_Total} + \beta_2\,\text{Cap\_PTD} + \beta_3\,\text{Rate\_Ineficiencia} + \varepsilon.
+\]
+
+Embora o teste F seja significativo (\textit{p}=0.000100), a capacidade explicativa é reduzida (\(R^2_{aj}=0.0639\), cerca de 6.39\%). Em termos práticos, a maior parte da variabilidade de \textit{Util\_Media} permanece sem explicação pelas variáveis escolhidas.
+
+Nos coeficientes, \textit{P\_IP\_Total} e \textit{Cap\_PTD} surgem significativos, mas \textit{Rate\_Ineficiencia} não (\textit{p}=0.5773). Esta observação é central: mesmo sendo variável concetualmente relevante para política energética, o seu efeito marginal estatístico sobre \textit{Util\_Media}, neste modelo linear e nesta amostra, não foi distinguível de zero.
+
+\subsubsection{4.5.2 Verificação das condições dos resíduos (normalidade, independência e homocedasticidade)}
+
+Os diagnósticos reforçam cautela:
+\begin{itemize}
+\item normalidade dos resíduos com sinais mistos (Shapiro falha; Jarque-Bera passa);
+\item independência frágil (Durbin-Watson=1.4658, sugerindo autocorrelação positiva);
+\item homocedasticidade aceitável (Breusch-Pagan não significativo);
+\end{itemize}
+
+\subsubsection{4.5.3 Verificação de multicolinearidade (VIF)}
+
+A multicolinearidade observada é elevada (VIF máximo=13.0215), com indícios de colinearidade severa em pelo menos um preditor.
+
+\subsubsection{4.5.4 Comentário ao modelo (\(R^2\) ajustado e significância dos preditores)}
+
+Assim, a principal justificação técnica é que o modelo é útil como aproximação exploratória, mas limitado para inferência causal forte ou para previsão operacional sem refinamentos.
+
+\subsubsection{4.5.5 Estimativa de Y para os códigos 101--109 (Aveiro) e comparação com valores reais}
+
+Para os 9 concelhos de Aveiro avaliados, as métricas foram favoráveis em erro médio percentual (MAPE=5.91\%, RMSE=0.0338, MAE=0.0294), indicando bom acerto médio. No entanto, apenas 1 em 9 observações ficou dentro do IC 95\% previsto. Esta discrepância (bom erro médio, baixa cobertura intervalar) sugere possível problema de calibração dos intervalos ou subestimação de incerteza local.
+
+\subsubsection{4.5.6 Quantificação da redução esperada em Y para menos 20\% em \textit{Rate\_Ineficiencia}}
+
+Na simulação de redução de 20\% na ineficiência, obteve-se:
+\[
+\Delta\text{Util\_Media} = \beta_3\,\Delta\text{Rate\_Ineficiencia} = -0.000556,
+\]
+ou seja, cerca de -0.0556 pontos percentuais na ocupação média. O sinal é favorável (liberta capacidade), mas a magnitude é pequena, coerente com o facto de \(\beta_3\) não ser significativo. Portanto, a direção do efeito é plausível do ponto de vista energético, mas a sua quantificação deve ser tratada como cenário indicativo, não como estimativa de impacto causal consolidada.
+
+\subsubsection{4.5.7 Identificação dos concelhos mais viáveis para carregadores VE com base nos IC}
+
+A análise classificou 100\% dos concelhos como viáveis pelos critérios usados (saldo final positivo e utilização prevista abaixo de 70\%). Este resultado é operacionalmente atrativo, mas exige leitura crítica. Em particular:
+\begin{itemize}
+\item scores de viabilidade atingem valores muito acima de 100 (ex.: 7161.25), o que indica ausência de normalização efetiva da escala;
+\item a existência de saldo positivo universal pode refletir pressupostos conservadores/agregados da formulação, mais do que condições locais reais de ponta;
+\item a incerteza preditiva é heterogénea (alguns IC largos), o que recomenda priorização por robustez e não apenas por ranking de score.
+\end{itemize}
+
+Logo, a conclusão prática não deve ser ``instalar em todo o lado'', mas sim ``instalar por fases'', com prioridade para concelhos que combinem saldo elevado, utilização moderada e intervalos de previsão mais estreitos.
+
+\subsection{4.6. Análise e Discussão de Resultados}
+
+Em síntese, os resultados mais relevantes confirmam que existe margem técnica para articular eficiência energética na iluminação pública com expansão da mobilidade elétrica. A componente descritiva mostra um volume ainda expressivo de tecnologia ineficiente (34.2\% da potência de IP), o que sustenta o potencial de modernização por LED. Em paralelo, a utilização média da rede em torno de 51\% indica, em termos agregados, disponibilidade operacional para acomodar nova carga, desde que a implementação seja planeada por prioridade territorial.
+
+Na inferência estatística, usando \(\alpha=0.05\) em todos os testes de hipótese, obteve-se evidência robusta de que o nível médio de ocupação é inferior a 60\% (teste t unilateral), de que existem diferenças regionais nos níveis médios de carga (ANOVA com confirmação pós-hoc), e de que há relação linear forte entre capacidade instalada e carga de iluminação (Pearson, \(r=0.9111\)). Em contraste, não se confirmou diferença estatisticamente significativa entre os grupos ``Modernizados'' e ``Ineficientes'' no teste t de duas amostras, sugerindo que a dinâmica de ocupação da rede depende de fatores adicionais para além do rácio tecnológico isolado.
+
+Quanto ao modelo preditivo, apesar de significância global (teste F significativo), a capacidade explicativa foi limitada (\(R^2\) ajustado de 6.39\%), com sinais de multicolinearidade relevante (VIF elevado) e fragilidade em alguns pressupostos dos resíduos. Assim, o modelo é útil como ferramenta exploratória e de apoio à priorização preliminar, mas não deve ser interpretado como instrumento causal forte sem refinamentos metodológicos adicionais.
+
+As previsões para os concelhos de Aveiro apresentaram erro médio percentual reduzido (MAPE=5.91\%), mas com cobertura baixa dos intervalos de confiança (1 em 9), o que recomenda prudência na leitura da incerteza preditiva local. Na simulação de redução de 20\% em \textit{Rate\_Ineficiencia}, observou-se redução esperada pequena em \textit{Util\_Media} (\(-0.000556\)), coerente com a não significância estatística de \(\beta_3\). Logo, o ganho esperado existe no sentido desejado, mas a magnitude estimada deve ser tratada como indicativa.
+
+Por fim, a análise de viabilidade para carregadores VE identificou potencial elevado em termos agregados; contudo, a classificação de 100\% dos concelhos como viáveis e a escala dos scores sugerem necessidade de recalibração do critério para maior realismo operacional. A conclusão prática do trabalho é, portanto, clara: a estratégia recomendada é implementação faseada, priorizando concelhos com melhor combinação de saldo de potência, utilização prevista moderada e menor incerteza estatística das previsões. Esta abordagem maximiza robustez técnica e reduz risco de sobrecarga na expansão da infraestrutura de carregamento.

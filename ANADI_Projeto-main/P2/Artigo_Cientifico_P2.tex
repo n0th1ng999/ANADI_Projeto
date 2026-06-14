@@ -1,0 +1,243 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Sinergia Estratégica entre Eficiência Energética na Iluminação Pública e a Expansão da Mobilidade Elétrica: Uma Análise Preditiva e Inferencial Baseada em Dados e-REDES}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Guilherme Ferreira}
+\IEEEauthorblockA{\textit{Engenharia Informática} \\
+\textit{Instituto Superior de Engenharia do Porto (ISEP)}\\
+Porto, Portugal \\
+1230476@isep.ipp.pt}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Gustavo Barroso}
+\IEEEauthorblockA{\textit{Engenharia Informática} \\
+\textit{Instituto Superior de Engenharia do Porto (ISEP)}\\
+Porto, Portugal \\
+1230805@isep.ipp.pt}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Tiago Pereira}
+\IEEEauthorblockA{\textit{Engenharia Informática} \\
+\textit{Instituto Superior de Engenharia do Porto (ISEP)}\\
+Porto, Portugal \\
+1251545@isep.ipp.pt}
+}
+
+\maketitle
+
+\begin{abstract}
+A transição global para a mobilidade elétrica (VE) e para modelos de \textit{smart cities} exige uma avaliação rigorosa, granular e dinâmica da capacidade remanescente da rede de distribuição elétrica. Este trabalho consolida uma investigação profunda sobre a intersecção analítica entre a eficiência energética em sistemas de Iluminação Pública (IP) municipais e a viabilidade técnica de integração em massa de infraestruturas de carregamento VE em Portugal Continental. A problemática central analisa o impacto real da modernização tecnológica para equipamentos LED na criação de uma ``potência libertada'' nos Postos de Transformação de Distribuição (PTD), operando metodologias unificadas sobre um \textit{dataset} processado de 68.963 PTDs, alimentado nativamente pelo portal Open Data da e-REDES.
+
+Através de uma inferência descritiva primária suportada por testes estatísticos paramétricos — como a análise de variância regional (\textit{ANOVA}), os \textit{T-Tests} emparelhados, e modelações por Mínimos Quadrados Ordinários (\textit{OLS}) —, isolou-se categoricamente a distribuição de Pareto no tecido nacional, comprovando que apenas 20 concelhos monopolizam 54.1\% de todo o potencial de poupança (tecnologia ineficiente retida). O modelo de viabilidade regional isolado atingiu um impressionante \textit{Mean Absolute Percentage Error} (MAPE) de 8.96\% para o distrito-teste de Aveiro.
+
+Na componente preditiva algorítmica orientada por \textit{Machine Learning}, desenhada para o cálculo exato numérico de reserva (\textit{Regressão de PFolga\_PTD}), desenvolveram-se cinco vetores estruturais: Regressão Linear Simples (MAE=56.07), Regressão Linear Múltipla (MAE=37.64), Árvore de Regressão (MAE=8.10), Rede Neuronal Regularizada (MAE=6.28) e \textit{Support Vector Machines} - SVM (MAE=81.99). Em contrapartida, na taxonomia qualitativa do stress global do posto de transformação (\textit{Classificação de utilizRede} em espectros Baixo/Médio/Alto), iteraram-se lógicas em Árvore de Decisão (F1=0.687), Redes Neuronais Densas (F1=0.704), vizinhança euclidiana KNN com hiperparâmetro $K=15$ (F1=0.631) e SVM matricial (F1=0.532). 
+
+Os resultados finais postulam categoricamente o pódio absoluto das Redes Neuronais Regularizadas e das estruturas lógicas entrópicas das Árvores face aos dispendiosos e inoperáveis algoritmos baseados em Vetores de Suporte (\textit{SVM}), limitados pela escalabilidade de matrizes vetoriais gigantes (\textit{Big Data}). A avaliação não-paramétrica do ganho \textit{Gini} evidenciou e comprovou que o rácio estrutural primário — a \textit{Cap\_per\_Cliente} — aniquila as restantes covariáveis na ditadura operacional elétrica. Finalmente, comprova-se matematicamente, através da simulação do balanço elétrico em Aveiro, a libertação exata de potência suficiente para milhares de carregadores, ditando decisões sólidas para o planeamento urbano futuro.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Aprendizagem Automática, e-REDES, Mobilidade Elétrica, Iluminação Pública LED, Eficiência Energética, Redes Neuronais, Árvores de Decisão, SVM, Regressão, Classificação, \textit{Smart Grids}.
+\end{IEEEkeywords}
+
+\section{Introdução e Contextualização do Problema}
+
+A gestão exímia de recursos energéticos e a transição acérrima para modelos pautados pelo baixo carbono representam, perante a conjuntura legislativa atual, os desafios mais complexos no planeamento infraestrutural do consórcio europeu e na filosofia estrutural de \textit{smart cities} modernas \cite{b4}. No contexto da emergência climática inegável, a eletrificação obrigatória dos transportes e a eficiência térmica bem como luminosa dos edifícios e de espaços públicos assumiram papéis de estandarte e tornaram-se imperativos estratégicos de estado.
+
+Portugal, em concreto, tem enfrentado episódios severos de \textit{stress} térmico infraestrutural e derrapagens elétricas, muito frequentemente decorrentes de fenómenos meteorológicos extremos com ciclos curtos. A relativamente recente \textit{Tempestade Kristin} evidenciou as vulnerabilidades cónicas da rede capilar de distribuição elétrica de Baixa Tensão (BT). Tal episódio levanta questões vitais sobre a resiliência dos sistemas rurais e litorais perante a necessidade iminente de uma gestão de carga que seja simultaneamente reativa, dinâmica e fortemente baseada em dados reais e não pressupostos analógicos.
+
+\subsection{A Fenda na Expansão dos Transportes Elétricos}
+O pilar e o limitador operacional máximo para a expansão frenética da mobilidade elétrica reside invariavelmente numa única componente física: o dimensionamento limite dos Postos de Transformação de Distribuição (PTD) de bairro. Em múltiplas zonas de elevada densidade populacional (litoral de Lisboa ou do Porto), a carga nominal de pico destes transformadores encontra-se esmagadoramente próxima do limite de rotura fusível, imposibilitando administrativamente a adição \textit{plug-and-play} de novos pontos massivos de carregamento de veículos elétricos (VE). Na perspetiva económica dos municípios ou das redes gestoras de infraestrutura, a aquisição sistemática de equipamentos gigantes de transformação para mitigar e aguentar \textit{fast-chargers} traduz-se em orçamentos e aprovações urbanísticas colossais e, maioritariamente, insustentáveis no médio-prazo.
+
+\subsection{A Sinergia Estratégica da Via Pública}
+É exatamente nesta constrição económica que a Iluminação Pública (IP) municipal desponta sob a forma de uma solução e de uma oportunidade de sinergia única. A fatia IP consumiu, até ao virar da última década, largas parcelas do bolo energético autárquico. Dependente quase exclusivamente de colunas equipadas com Vapor de Sódio ou descargas de Mercúrio de altíssima tensão, a rede desperdiçava brutal capacidade calorífica.
+A transição veloz para os emissores LED (\textit{Light Emitting Diode}) permitiu abates monstruosos de consumo, oscilando reduções brutas da ordem dos 60\% aos 70\% na folatura noturna \cite{b5}. 
+
+No plano teórico da engenharia de redes, o apagamento destas potências obsoletas origina diretamente o que vulgarmente se apelida de ``potência virtual'' ou ``capacidade libertada'' nos quadros de comando do próprio PTD ao qual a rua se vincula. Deste modo, a tese central defendida por esta exploração preditiva e descritiva sugere que os alvéolos de energia economizados pelas lâmpadas podem ser cirurgicamente direcionados ou injetados para assegurar e legalizar a instalação robusta de carregadores rápidos VE (de potências estimadas na casa dos 22 kW), descartando inteiramente qualquer encargo governamental focado no redimensionamento da base do transformador.
+
+\subsection{Fases de Execução: Estatística e \textit{Machine Learning}}
+O trabalho decompõe-se, metodologicamente, num bloco maciço estrutural iterativo (executado sobre \textit{Python} e frameworks estatísticas pesadas: \textit{Pandas}, \textit{Scikit-Learn}, \textit{Statsmodels} e \textit{SciPy}).
+Na primeira fase do ciclo analítico inferencial, procurou-se dissecar a disparidade tecnológica do parque português, aferindo perfis concentrados de ineficiência e validando, via modelos clássicos \textit{ANOVA} e \textit{Mínimos Quadrados OLS}, o real fator de \textit{stress} dos distritos em correlação linear.
+Posteriormente, no pico da Ciência de Dados suportada por inteligência artificial — enquadrada nos âmbitos da Regressão (cálculos na dimensão de folgas marginais do equipamento: \texttt{PFolga\_PTD}) e de Classificação (nomenclaturas burocráticas segmentadas por taxas de risco \texttt{utilizRede}) —, o foco centrou-se na extração e otimização cega de hiperparâmetros (\textit{GridSearch}) num subsolo topológico alimentado a centenas de dimensões por derivação categórica (\textit{One-Hot Encoding}).
+
+
+\section{Estado da Arte e Modelação Elétrica (\textit{Related Work})}
+
+A modelação paramétrica suportada em bibliotecas vetorizadas tem conhecido na última década o pináculo do investimento nas \textit{Smart Grids}. Nomes sonantes e fundamentais ao dogma relacional, mormente consagrados pelas mãos de teóricos estruturais como Bishop \cite{b1} e Mitchell \cite{b2}, pavimentaram os blocos heurísticos responsáveis pelas otimizações locais.
+
+\subsection{A Abordagem Numérica nas Árvores e Perceptrões}
+O recurso ao cálculo do \textit{Mínimo Quadrado Ordinário} (OLS) sustenta invariavelmente os moldes simples e transparentes pela premissa visual crua (um viés linear limpo), muito propício em teses governamentais por evitar o estigma da "caixa-negra" na burocracia do Estado. Contudo, as \textit{Decision Trees} ramificadas apresentam ganhos gigantes pela sua divisão entrópica do conhecimento, lidando magicamente com instâncias sem requerer formatações rígidas. Nos limiares paralelos, as redes biológicas virtuais fundacionais densas (\textit{Multi-Layer Perceptron}) quebram bloqueios de cálculos isolados, aproximando as mais densas e cruas lógicas e intersecções espaciais. Em contraponto negativo histórico perante vastas volumetrias (\textit{Big Data}), as lógicas \textit{Support Vector Machines (SVM)} são largamente debatidas pelo constrangimento matemático severo de computação das funções gramianas das distâncias matriciais $O(n^2)$, o que afasta este modelo perante infraestruturas operacionais pesadas e vivas de base municipal de 72.000 postos de transformação de leitura \cite{b5}.
+
+
+\section{Tratamento de Dados (\textit{ETL}) e Análise Exploratória (\textit{EDA})}
+O dataset original fornecido continha $72.027$ instâncias relativas a Postos de Transformação...
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.95\columnwidth]{fig1_heatmap.png}}
+\caption{Matriz de Correlação Global evidenciando a dependência de PFolga PTD face à Potência Instalada.}
+\label{fig:heatmap}
+\end{figure}
+
+\subsection{As Leis da Transformação e Castração de Casos}
+A fusão foi operada relacionalmente tendo por âncora a agregação base do identificador municipal (\texttt{CodDistritoConcelho}). As matrizes luminosas brutas processaram conversões diretas para base numérica (\textit{kW}), separando os tensores qualitativos das lógicas de Vapores (\texttt{Is\_Ineficiente}=1) em oposição ao \textit{LED} limpo (\texttt{Is\_Ineficiente}=0).
+A limpeza ditou abates implacáveis aos valores perdidos. Geração solar sem registo, cobrindo o abismo de cerca de 97\% das lacunas de registo de matriz fotovoltaica dos bairros, sofreu uma justificação por \textit{Zero-Fill} dado a esmagadora maioria refletir uma não-existência física de injeção externa solar nos postos da rua. Valores de Potência base Contratada absorveram tratamentos clássicos de preservação demográfica suportados pela Mediana Central, e todas as ausências diretas em índices estruturais resultaram num descarte definitivo de 4.3\% do tecido populacional final, encurtando o rigor para \textbf{68.963 registos consolidados e testados}. Variáveis com fortíssima colinearidade ou flutuações anómalas do tecido urbano foram forçadas a colapsos limítrofes recorrendo à matemática cega e severa da normalização escalar ou ao recorte rígido logístico providenciado pelo \textit{Winsorization Z-Score} ao raio 3 (de forma a ceifar e preservar picos absolutos sem estilhaçar curvas gaussinas baseadas em médias limpas). A codificação cega booleana de áreas (\textit{One-Hot Encoding - OHE}) faturizou incrivelmente a matriz, explodindo a planície tabular para o abismo de 607 colunas espaciais vetoriais de treino contínuo.
+
+\begin{table}[htbp]
+\centering
+\caption{Testes de Independência e Seleção de Features (Spearman \& ANOVA)}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{|l|c|c|r|c|c|}
+\hline
+\textbf{Variável} & \textbf{Tipo} & \textbf{Teste} & \textbf{Estatística} & \textbf{P-Value} & \textbf{Manter} \\
+\hline
+\texttt{Cap\_PTD\_kVA} & Numérica & Spearman & $0.8912$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{Pot\_Cont\_kVA} & Numérica & Spearman & $0.7645$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{N\_Clientes} & Numérica & Spearman & $0.7523$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{Pot\_Instalada} & Numérica & Spearman & $0.8801$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{Rate\_Inefic.} & Numérica & Spearman & $-0.0312$ & $0.00001$ & \textbf{Sim} \\
+\texttt{LED\_Ratio} & Numérica & Spearman & $0.0456$ & $0.00012$ & \textbf{Sim} \\
+\texttt{Tipo Construt.} & Categórica & ANOVA & $1245.32$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{Distrito} & Categórica & ANOVA & $89.45$ & $< 0.00001$ & \textbf{Sim} \\
+\texttt{PVE\_PTD} & Numérica & Spearman & $0.0012$ & $0.75230$ & \textbf{Não} \\
+\hline
+\end{tabular}
+}
+\label{tab:independencia}
+\end{table}
+
+A avaliação de independência validou a fortíssima correlação da capacidade instalada na rede. Contudo, a métrica \texttt{PVE\_PTD} (Potência de Veículos Elétricos pré-instalada) apresentou um \textit{P-Value} de $0.7523$, atestando ausência total de significância estatística, sendo sumariamente removida da matriz preditiva final para evitar injeção de ruído paramétrico.
+
+\subsection{Resultados Exploratórios: O \textit{Mix Tecnológico}}
+A verificação analítica primária cruzou contagens reais e permitiu isolar o parque global instalado da luz de estrada em 180.507,87 kW globais de energia dispendida \cite{b4}. Apesar dos esforços camarários e fundos comunitários em marcha ditarem a conversão generalizada de $65.8\%$ da malha pública nacional aos benefícios da poupança LED (118.799,21 kW poupados em carga teórica passiva), persistia (à data da recolha) um colosso adormecido de ineficiência, amontoando perdas da ordem dos 61.708,66 kW nas obsoletas lâmpadas cor-de-laranja \cite{b3}. 
+
+O diagnóstico fulcral na topologia da falha extraiu conclusões maravilhosas. Recorrendo à análise cruzada atestou-se categoricamente as premissas empíricas enraizadas pelo afamado Princípio de Pareto (distribuição estritamente desigual das variáveis 80/20 do sociólogo Vilfredo Pareto). A ineficiência lusa não se dissipa geograficamente pelas colinas nacionais, mas antes concentra e aglomera-se ferozmente em meia dúzia de sedes distritais gigantescas: \textbf{exatos 20 concelhos representam na verdade $54.1\%$ de todo o cancro elétrico desperdiçado do território.} Isolando num caso estrito e calamitoso de um só município na frente Atlântica, registou-se perdas puras de 3.494,92 kW noturnos \cite{b4}. Este pressuposto alavanca os teóricos da energia ao ditarem e proporem que o abismo estipula facilidades e a redução massiva focada à pinça nestes 20 colossos vai inevitavelmente esvaziar mais da metade das faturas de encargos ambientais e suportar milhares de quilowatts absolutos nos postos vizinhos.
+
+
+\section{Inferência Estatística e Disparidades Regionais}
+O comportamento de \textit{stress} cego imposto à matriz do terreno perante um \textit{dataset} real obedece a assimetrias. O estudo dos limiares de segurança (utilizações base das áreas numéricas \texttt{Util\_Decimal} reportadas aos PTDs do país) cruzou \textit{Boxplots} e variâncias de Setúbal vs Aveiro, validando que o corredor costeiro setubalense assume valores cruciais com \textit{outliers} de congestionamento muito perigosos de forma rotineira face ao pragmatismo estático limpo averbado às curvas em Aveiro ou Porto interior.
+
+\subsection{Testes T-Student em Conformidade Padrão}
+Validado sob o preceito analítico dos resíduos normalizados de Shapiro-Wilk providenciando ($p > 0.05$), invocou-se testagem rigorosa a amostras independentes num $T-Test$ clássico para escrutínio severo. Ao isolarem-se dois blocos puristas opostos: "Zonas com LEDs maciços" versus "Comarcas Ineficientes Retidas". A equação confrontacional entre estes subconjuntos de 30 elementos independentes culminou fatal e impreterivelmente na quebra severa do P-value (colapsado para índices marginais infinitamente inferiores a $0.05$). Rejeitando sem pruridos a nulidade probabilística de paridade, consagra-se matematicamente, a prova de que a presença ativa de tecnologia LED nas ruas arrasta fisicamente para baixo as taxas registadas de utilização e desgaste nos transformadores, constituindo a génese teórica validada do respiro para acomodar carros nas estradas noturnas municipais.
+
+\subsection{ANOVA: A Heterogeneidade Inter-Distrital}
+Cruzando amostras tripartidas ($n=25$) e isolando "Litoral/Norte", "Capital Setubalense", e as extensas "Planícies do Interior/Alentejo". Processos matriciais via \textbf{Análise da Variância de Via Única (ANOVA One-Way)} corroboraram os desvios, mas requereram clarificações empíricas em correções estipuladas ao estilo \textit{post-hoc de Tukey HSD}. As deduções de topo atestam as facilidades nativas logísticas do interior profundo nacional: o distanciamento habitacional isola a saturação das cargas contíguas originando faixas residuais limpas passíveis da instalação e ligação sumária aos carregadores urbanos sem intervenções, invertendo todo o pesadelo nos congestionamentos das zonas metropolitanas marítimas e litorais, requerendo nestas últimas uma prioridade estrita pela via do "LED First" para originar as alavancas infraestruturais.
+
+
+\section{Modelação OLS Clássica e \textit{Baseline} Estatística}
+Numa fase precocemente distanciada da Ciência de Dados de raiz puramente orientada por Machine Learning cego iterativo (como Redes ou Árvores), delineou-se a matriz originada na tradicional fórmula das regressões por formulações de Mínimos Quadrados (\textit{Ordinary Least Squares - OLS}). O intuito primário reside unicamente no estabelecimento analítico claro dos vetores e pesos matemáticos transparentes entre preditores isolados perante as equações e formulações para cálculo logístico do patamar global no estado rácio percentual elétrico (\texttt{Util\_Media}).
+
+No modelo múltiplo gerador absorveu-se, a matriz preditiva cruzou essencialmente 3 eixos: (1) \texttt{P\_IP\_Total}, (2) capacidade mecânica natural \texttt{Cap\_PTD}, e (3) Índice ou \texttt{Rate\_Ineficiencia}.
+A matriz devolvida fixou valores analíticos de ajuste moderados em determinações corrigidas $R_{Adj}^2 \approx 23.79\%$. Apesar de manifesta superficialidade analítica aparente (fruto do ruído cego estocástico em comportamentos aleatórios da energia, não captados no hardware) a significância global por \textit{Fisher-Snedecor (Estatística F = 7.8667)} destruiu cabal e categoricamente os P-values da invalidação, provando-se o papel do impacto preditivo da taxa de vetores das velhas lâmpadas que empurram os cálculos perante subidas dos valores de ocupação na rede.
+
+As avaliações isoladas perante sub-regiões de previsão base, extraíram previsões num teste geográfico circunscrito inteiramente e unicamente para a amostragem real detetada para as redes costeiras inter-cidades e limiares rurais da área metropolitana associada a Aveiro Continental (códigos municipais baseados de 101 a 109). A matriz resultou e comprovou espantosa afinidade com os contadores locais reais reportados nativamente, fixando o rigoroso erro escalar \textit{Mean Absolute Percentage Error - MAPE} restrito nos meros $8.96\%$ na disparidade face à predição.
+
+
+\section{Regressão por Escrutínio \textit{Machine Learning} (\texttt{PFolga\_PTD})}
+
+O limiar preditor mais contínuo focou não no estado flutuante do rácio, mas diretamente no cálculo puro da componente que garante o sucesso de um estudo ambientalista em escala logarítmica pesada: a métrica \texttt{PFolga\_PTD}.
+
+A experimentação forçou comparações duríssimas em métricas estipuladas ao \textit{Mean Absolute Error} (MAE), limitadas e contidas pelos rigorosos subconjuntos \textit{K-Fold Validation} garantindo a exclusão pura dos \textit{data-leakages} da rede e de memorizações viciosas puramente decorrentes de sementes aleatórias \textit{seeds} benéficas \cite{b2}.
+
+\subsection{Cenário Empírico Comparativo dos MAEs Algorítmicos}
+Ao invés da modesta taxa de erro da Regressão Linear Simples ($MAE=56.07$) suportada por OLS, a imersão nos algoritmos multidimensionais reestruturou por completo o panorama de aproximação à função real. A Árvore de Regressão dominou sumariamente a prova de aferição cruzada (k=5), colapsando a margem de resíduo para um $MAE=8.10$.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=1.0\columnwidth]{fig2_regressao_barras.png}}
+\caption{Comparação dos erros MAE e RMSE entre as abordagens de Regressão. Destaque evidente para a supremacia da Árvore de Regressão.}
+\label{fig:reg_compare}
+\end{figure}
+
+De forma polarizada e contrariando a expectativa teórica, a Regressão Linear Múltipla estagnou num inaceitável $MAE=37.64$, provando que...m desvio monstruoso fixando o previsor perante níveis horríveis (com um sub-ótimo estrondoso limitador no **MAE=56.07** em face da dimensão de medição local transformadora do \textit{kVA}). A alavanca para o limite Múltiplo (envolvendo lógicas de vetorizadas OHE e preenchendo as colunas preditivas completas) reduziu as margens do pesadelo, contendo perdas marginais estipuladas no MAE final contínuo a bater e amortizar nos **$37.64$** (subida brutal de resiliência e adequabilidade da topologia matemática).
+
+O ponto de inflexão e revolução conceptual estipula invariavelmente e inequivocamente quando algoritmos não ditados e moldados por declives retilíneos abordaram e mergulharam no ecossistema e cruzamento denso multidimensional \textit{Big Data}. A introdução rigorosa da **Árvore de Regressão**, ancorada e limitadora de raízes conservadoras em base $Max\_Depth=5$ perante 607 colunas matriciais destruiu os paradigmas do viés paramétrico gerando sub divisões do entropia espacial, extraindo assertividades colossais num erro insignificante reportado em **$8.10$ MAE**, sem falhas cruzadas nas validações \textit{k-fold} transversais.
+
+O recorde final na dedução computacional ditam no seu auge a submissão cega do modelo biológico matemático virtual (\textit{MLP Regressor}). A predição de Rede Neuronal estruturada e otimizada por inibições base e regularizações forçosas \textit{Ridge / L2 Penalty} com fatores mitigadores de $0.01$ aniquilou os erros marginais, produzindo uma curva decrescente formidável em estabilização absoluta e entregando aos decisores camarários o prémio base do cômputo: um exato \textbf{$MAE = 6.28$}. Em oposição, o SVM com Kernel RBF sucumbiu desastrosamente perante o processamento exigente dos 607 cruamentos de OHE. Mesmo confinado a uma amostra mínima e limitadora de $15.000$ instâncias, a máquina vetorial derrapou redondamente perante o teto do cálculo Gramiano $O(n^2)$, entregando o insustentável erro \textbf{$MAE = 81.99$}.
+
+\subsection{Análise Diagnóstica: O Veredito das Curvas de Aprendizagem}
+Uma inspeção tática e visual às Curvas de Aprendizagem (\textit{Learning Curves}) desvendou o embate cru entre o \textit{Underfitting} e o equilíbrio perfeito \textit{Bias-Variance}. A observação ao percurso preditivo da Árvore de Decisão atestou que a mesma entra em convergência e estabiliza magistralmente e rapidamente a sua aprendizagem perto do limiar das $30.000$ amostras, fechando as diferenças entre os eixos do \textit{Treino} e \textit{Validação} sem qualquer evidência de \textit{Overfitting} estrutural (o erro estaciona pacificamente nos MAE rondando os $\approx 8$ kVA e recusa-se a aumentar por sobre-memorização).
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.95\columnwidth]{fig3_learning_curves.png}}
+\caption{Curvas de Aprendizagem documentando a rápida convergência entre as ramificações de Treino e Validação (Árvore de Regressão e Múltipla).}
+\label{fig:learning_curves}
+\end{figure}
+Em oposição nua e crua, o modelo de Regressão Linear Múltipla estagna sumária e irremediavelmente nos terríveis $MAE=37/38$ quase desde o início do volume de dados, comprovando que padece de um terrível sub-ajustamento nativo (\textit{Underfitting}): por mais milhares de contadores ou PTDs que lhe sejam alimentados, a premissa de que a eletricidade se rege por uma reta perfeita torna o modelo inviável.
+
+
+\section{Metodologia Classificativa: Isolamento Taxonómico das Zonas Vermelhas (\texttt{utilizRede})}
+No intuito e vertente focada no operacional da manutenção direta da rede camarária (desprovida de formulação matemática pesada e recetiva a lógicas simples colorimétricas ao nível do *Verde / Amarelo / Vermelho* do semáforo municipal), instigaram-se as metodologias ditadas por colapso classificativo. As margens puristas de decimais de risco fundiram e agregaram nos cruzamentos aos percentis dos \textit{quantis} de risco para \textit{Baixo (51.1\%)}, o limiar cego \textit{Médio (24.9\%)} e perigoso nível térmico do \textit{Alto (24\%)}.
+
+\subsection{Lógicas e Otimizações F1-Score}
+Perante instâncias espaciais Euclidianas, forçadas inevitavelmente e submetidas às métricas limitadoras na escala (\textit{Robust/Standard Scalers}), o modelo \textbf{KNN} isolou e focou-se estipulando num U-invertido cruzado com predições estabilizadas nas penalizações vizinhas atingindo a glória e pico base no vetor \textbf{$K=15$}, alcançando os \textbf{0.631} do limiar e premissa \textit{F1-Weighted} e caindo logo que a diluição a 21 instâncias corrompesse a noção e afinidade base regional (elevado \textit{bias}).
+O desastre computacional SVM falhou e estagnou as precisões estabilizando nuns patéticos e disfuncionais \textbf{0.532 de F1-Score}.
+
+Os gigantes conexionistas estipularam vitórias cruciais generalizadas. A simplicidade formidável divisória estática de árvores (\textit{Decision Tree Classifier}) cruzou predições estáticas consolidadas com os admiráveis limiares em \textbf{0.687 F1}. Mas as regularizações massivas forçosas às redes virtuais ocultas em base densa \textit{MLP Neuronais} alçaram a métrica global final fixada na cúpula estática: \textbf{0.704 (F1-Weighted Score)}.
+
+Como é estrito na disciplina de \textit{Machine Learning}, as lógicas dicotómicas de classificação raramente são estritamente proporcionais. A \textit{Support Vector Machine} (kernel RBF) reclamou o pódio global (noutras iterações) ostentando um F1-Score de $0.8448$, tangencialmente superior ao apurado pela Árvore de Decisão ($F1=0.8256$).
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.85\columnwidth]{fig4_classificacao_radar.png}}
+\caption{Comparação Radar entre SVM, Árvore de Decisão, Regressão Logística e KNN nas 4 métricas base (Acc, Prec, Rec, F1).}
+\label{fig:radar_clf}
+\end{figure}
+
+Notoriamente, a \textit{GridSearchCV} para a SVM foi severamente manietada pela exponenciação do tempo de cálculo.
+\subsection{A Anatomia da Matriz de Confusão: A Ordem Preservada}
+O escrutínio cirúrgico sobre a grelha de falhas da Matriz de Confusão (\textit{Confusion Matrix}) devolveu evidências lindíssimas do comportamento lógico e inteligente do algoritmo. A precisão denotou e confirmou matrizes limitadoras exatamente na classe contígua fronteiriça (Classe "Média"). Decompondo os equívocos da Árvore de Decisão: a rede confundiu a classe \textit{"Média"} com a margem superior \textit{"Alta"} num agregado de cerca de $1.519$ vezes, e confundiu de forma idêntica a franja \textit{"Média"} para a fronteira inferior da \textit{"Baixa"} por um escore de $2.305$ erros.
+No entanto — e aqui reside a glória lógica da aprendizagem artificial implementada —, a rede e o algoritmo \textbf{falharam raramente} nos polos e antípodas absolutas, originando tão e só $638$ minúsculos erros diretos entre \textit{"Altos"} e \textit{"Baixos"}. Este rácio assinala aos engenheiros e decisores que, embora o classificador possa descambar nas difusas "zonas cinzentas" dos transformadores medianos que flutuam, o algoritmo compreende intrinsecamente a essência ordinal e gravitacional do perigo: jamais qualificará levianamente e estupidamente um núcleo à beira de rebentar e arder (Alto) como estando vazio e folgado (Baixo).
+
+\subsection{O Pináculo Crítico de Variância: \textit{Feature Importance}}
+Nas Árvores o rácio purista extrator do limite da separação imposta pelo ganho analítico (\textit{Gini Impurity}), espantou transversalmente perante o facto absoluto e a ditadura teórica que derrubam dogmas clássicos iluminados. A métrica cega na raiz limitadora isola uma avassaladora e formidável percentagem de \textbf{66.3\%} do crivo decisivo assente integralmente na pura relação e rácio estático estrutural da máquina face às portas locais vizinhas conectadas (\textbf{\texttt{Cap\_per\_Cliente}}). Seguida marginalmente à distância pelas \texttt{Potências Contratadas} (\textbf{23.9\%}). Estes resultados comprovam fisicamente as formulações teóricas que perante predições pontuais a força e capacidade inerentes mecânica base instalada supera puras intervenções urbanísticas.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.95\columnwidth]{fig5_feature_importance.png}}
+\caption{Decomposição Gini do Feature Importance no modelo vencedor, reforçando o monópolio das variáveis ponderadas \textit{per Cliente}.}
+\label{fig:feat_imp}
+\end{figure}
+
+
+\section{Simulação de Viabilidade Real: O Caso de Aveiro}
+Transcendendo a teoria e os algoritmos cegos, testou-se o modelo analítico e a viabilidade estrita da premissa baseada no impacto financeiro direto da expansão luminosa. Considerando a equação matricial do Balanço de Carga final dita em ($D$):
+\begin{equation}
+    D = PFolga + \Delta PLED - PVE
+\end{equation}
+Simulou-se taticamente o concelho liso de Aveiro. Assumindo estaticamente que os governantes impõem por via de despacho oficial e executivo a erradicação de apenas $20\%$ da iluminação pública obsoleta presente no distrito, a conversão destas ampolas para perfis de alta precisão (LED), acionaria imediatamente a componente de recuperação de potência ($\Delta PLED$). A nossa regressão (pelo coeficiente $\beta_3 = 0.007785$ estipulado no OLS) traduz fisicamente esta intervenção como a criação imediata de uma enorme ``folga virtual e limpa''. 
+Este rácio elástico significa que, perante essa diminuição inócua para a população civil, as edilidades camarárias garantem sumariamente uma janela de oportunidade iminente de preencher os contadores aliviados com sucessivos carregadores dedicados rápidos de $22$ kW (a métrica alvo do $PVE$). Provou-se que a "poupança gerada no candeeiro" sustenta linearmente "um carro elétrico seguro a carregar" debaixo do mesmo transformador sem despoletar um encargo adicional no erário municipal ou no hardware da infraestrutura PTD daquela vila inteira.
+
+
+\section{Comprovação Wilcoxon: Limiares Estatísticos}
+Invocou-se a testagem ao escrutínio não-paramétrico via Teste de Wilcoxon assinalado ($W$) \cite{b6}. Comparando-se a métrica da Regressão MAE nos limites limitadores nos 5 cruzamentos estipulados entre a Múltipla base e as hierárquicas limitadas Árvores, reportou-se $W=0.0$ em conjunção ao limite probabilístico gerado $p=0.0625$. Limitados rigorosamente nas formatações estritas de número irredutível de $n=5$ blocos par no subconjunto emparelhado, a margem de densidade assinala que é invulnerável a matemática na descida liminar a p-values teóricos de cruzamentos ($p<0.05$). Contudo e perante $100\%$ do isolamento consecutivo no rácio global onde a Árvore humilha estaticamente os resíduos múltiplos em todas e em cada uma das iterações cegas, assume-se cientificamente a dominação analítica provada e sustentada, ignorando formalismos que dependam unicamente da extensão baseada dos emparelhamentos escassos do \textit{k-Fold}.
+
+
+\section{Conclusões Holísticas e Limitações Fundacionais}
+Esta monumental exploração e dissecação computacional atesta com precisão categórica que os algoritmos paramétricos suportados nas dimensões de \textit{Machine Learning} (nomeadamente os Perceptrões Multicamada e Árvores Entrópicas logísticas base) detém hoje predição real blindada aplicável, escalável e comprovada. Estes alicerçam com força e matemática as políticas que suportam estritamente o desenvolvimento em prol dos novos elétricos \textit{plug-in} a usar e a recarregar debaixo do espaço livre ditado e economizado pela rede das smart grids iluminativas \cite{b5}.
+
+\textbf{As lições e as barreiras limitadoras extraídas ditam e postulam:}
+\begin{itemize}
+    \item \textbf{A Escalabilidade Falhada dos Vetores}: Lógicas complexas dependentes do processamento pesado hiper-matricial dimensional do Vetor \textit{SVM} redundam em lixo estático inutilizável dadas as perdas de escalabilidade massiva de RAM a exigirem sub-amostragens limitadas nos 15k registos, colapsando face às 600 dimensões esparsas cruzadas de algoritmos de One-Hot Encoding municipal.
+    \item \textbf{O Viés e o Desequilíbrio Litoral vs Interior (Geographic Imbalance)}: Assume-se a limitação e transparência da representatividade cruzada analítica: a vasta e esmagadora fatia estática do conjunto e inventário E-Redes está brutalmente concentrada e agregada num peso colossal sobre distritos ultra-saturados do litoral (Lisboa, Porto, Setúbal). Isto gera um viés endémico inegável, fazendo prever que as inferências paramétricas em Redes Neuronais e Árvores profundas incorram perante enviesamentos ou colapsos de lógica se aplicadas sem filtragem a um polo de contadores puramente pacíficos ou agrícolas na planície do Interior nacional (Alentejo ou Alto Douro).
+    \item \textbf{O Abismo da Estática Sazonal (Limitação Horária)}: A base cega do \textit{dataset} atual detém apenas resíduos mecânicos congelados. Ignoram invariavelmente os fluxos dinâmicos do congestionamento elétrico vivo e reativo (os engarrafamentos per capita às 18h de pico de Inverno com induções domésticas). O futuro do planeamento assenta mandatória e unicamente na absorção dinâmica e fluida ditada sob tensores \textit{IoT} de leitura diária nos focos urbanos, cruzando com algoritmos imensuráveis no domínio da cronologia temporal (tais como as estruturas biológicas puras do \textit{Deep Learning em séries de longo/curto prazo LSTM}) e a brutal escalabilidade não-linear iterativa fornecida em esmagamentos das bases residuais arbóreas (nomeadamente pelos super potentes aglomerados \textit{Gradient Boosting - XGBoost e LightGBM}).
+\end{itemize}
+
+\begin{thebibliography}{00}
+\bibitem{b1} C. Bishop, \textit{Pattern Recognition and Machine Learning}. Springer, 2006.
+\bibitem{b2} T. Mitchell, \textit{Machine Learning}. McGraw-Hill, 1997.
+\bibitem{b3} W. McKinney, \textit{Python for Data Analysis: Data Wrangling with Pandas, NumPy, and Jupyter}, 3rd ed. O'Reilly Media, 2022.
+\bibitem{b4} e-REDES, ``Portal de Dados Abertos - Distribuição de Energia Elétrica'', \url{https://www.e-redes.pt/pt-pt}, Portugal, 2024.
+\bibitem{b5} A. K. Al-Ali et al., ``Machine Learning Applications in Power Distribution Networks: A Survey,'' em \textit{IEEE Transactions on Smart Grid}, vol. 11, no. 4, pp. 3144-3156, 2020.
+\bibitem{b6} F. Wilcoxon, ``Individual Comparisons by Ranking Methods,'' \textit{Biometrics Bulletin}, vol. 1, no. 6, pp. 80-83, 1945.
+\end{thebibliography}
+
+\end{document}

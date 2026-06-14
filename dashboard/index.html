@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANADI TP2 — Dashboard de Análise de Desempenho ML</title>
+    <meta name="description"
+        content="Dashboard interativo de análise de desempenho de técnicas de aprendizagem automática aplicadas à rede elétrica portuguesa.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="chart.umd.min.js"></script>
+    <script src="chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <svg viewBox="0 0 64 64" fill="none" width="64" height="64">
+                    <rect width="64" height="64" rx="16" fill="url(#loadGrad)" />
+                    <path d="M16 44L32 20L48 44" stroke="white" stroke-width="4" stroke-linecap="round"
+                        stroke-linejoin="round" class="loading-path" />
+                    <circle cx="32" cy="32" r="5" fill="white" opacity="0.8" class="loading-pulse" />
+                    <defs>
+                        <linearGradient id="loadGrad" x1="0" y1="0" x2="64" y2="64">
+                            <stop stop-color="#6366f1" />
+                            <stop offset="1" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h2 class="loading-title">ANADI <span>TP2</span></h2>
+            <p class="loading-subtitle">Dashboard de Análise de Desempenho ML</p>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+                    <path d="M8 22L16 10L24 22" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <circle cx="16" cy="16" r="3" fill="white" opacity="0.8" />
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#6366f1" />
+                            <stop offset="1" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">ANADI<span class="logo-accent">TP2</span></span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview" class="nav-link active" data-section="overview">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span>Visão Geral</span></a></li>
+            <li><a href="#eda" class="nav-link" data-section="eda">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span>Exploração de Dados</span></a></li>
+            <li><a href="#regression" class="nav-link" data-section="regression">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    <span>Regressão</span></a></li>
+            <li><a href="#classification" class="nav-link" data-section="classification">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a10 10 0 0110 10" />
+                        <path d="M12 2a10 10 0 00-10 10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                    </svg>
+                    <span>Classificação</span></a></li>
+            <li><a href="#comparison" class="nav-link" data-section="comparison">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                    <span>Comparação</span></a></li>
+            <li><a href="#conclusions" class="nav-link" data-section="conclusions">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                    </svg>
+                    <span>Conclusões</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="team-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+                <span>Engenharia Informática</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile menu toggle -->
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ==================== OVERVIEW ==================== -->
+        <section class="section active" id="overview">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Análise de Desempenho de Técnicas de <span class="gradient-text">Aprendizagem Automática</span>
+                    </h1>
+                    <p class="section-subtitle">Dashboard interativo — Postos de Transformação de Distribuição (PTD) ·
+                        Rede Elétrica Portuguesa</p>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card" style="--delay: 0.1s">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" data-count="72027">0</span>
+                        <span class="kpi-label">Registos (PTDs)</span>
+                    </div>
+                    <div class="kpi-trend up">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                        </svg>
+                        <span>Após limpeza</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="--delay: 0.2s">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" data-count="32">0</span>
+                        <span class="kpi-label">Variáveis</span>
+                    </div>
+                    <div class="kpi-trend neutral">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Numéricas + Categóricas</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="--delay: 0.3s">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value"><span data-count="5">0</span></span>
+                        <span class="kpi-label">Modelos de Regressão</span>
+                    </div>
+                    <div class="kpi-trend up">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                        </svg>
+                        <span>LR, DT, SVM, NN, Multi</span>
+                    </div>
+                </div>
+                <div class="kpi-card" style="--delay: 0.4s">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value"><span data-count="4">0</span></span>
+                        <span class="kpi-label">Modelos de Classificação</span>
+                    </div>
+                    <div class="kpi-trend up">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                        </svg>
+                        <span>DT, NN, SVM, KNN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Card -->
+            <div class="glass-card context-card fade-in">
+                <div class="context-icon">⚡</div>
+                <div class="context-content">
+                    <h3>Contexto do Projeto</h3>
+                    <p>Avaliação do impacto da eficiência energética na iluminação pública (LED) sobre a capacidade dos
+                        PTDs para suportar a mobilidade elétrica (VE). Análise da <strong>Folga de Rede</strong>
+                        (<em>PFolga_PTD</em>) e do <strong>Nível de Utilização</strong> (<em>utilizRede</em>) usando
+                        técnicas de aprendizagem automática.</p>
+                </div>
+            </div>
+
+            <!-- Methodology Pipeline -->
+            <div class="glass-card fade-in">
+                <h3 class="card-title">Metodologia de Trabalho</h3>
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Carregamento</h4>
+                            <p>72k registos · PTD_level_dataset.xlsx</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Pré-processamento</h4>
+                            <p>Nulos · Outliers · Normalização</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>EDA</h4>
+                            <p>Correlações · Distribuições · Testes</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Modelação</h4>
+                            <p>Regressão · Classificação · K-Fold</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Avaliação</h4>
+                            <p>Curvas · Wilcoxon · Métricas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset Summary -->
+            <div class="two-col-grid fade-in">
+                <div class="glass-card">
+                    <h3 class="card-title">Tratamento de Valores Omissos</h3>
+                    <div class="data-table-wrapper expandable-table" style="cursor: zoom-in;"
+                        title="Clica para expandir">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Variável</th>
+                                    <th>Estratégia</th>
+                                    <th>Justificação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Pot_Geracao_kW</code></td>
+                                    <td><span class="badge badge-green">Fill 0</span></td>
+                                    <td>~97.5% dos PTDs não têm geração</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Geracao_per_Cliente</code></td>
+                                    <td><span class="badge badge-green">Fill 0</span></td>
+                                    <td>Derivada da anterior</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Pot_Contratada_kVA</code></td>
+                                    <td><span class="badge badge-blue">Mediana</span></td>
+                                    <td>~30% nulos, muitos para eliminar</td>
+                                </tr>
+                                <tr>
+                                    <td><code>D_PTD, Util_Decimal, …</code></td>
+                                    <td><span class="badge badge-red">Remoção</span></td>
+                                    <td>~4.2% em comum, indicadores-chave</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title">Tratamento de Outliers</h3>
+                    <div class="data-table-wrapper expandable-table" style="cursor: zoom-in;"
+                        title="Clica para expandir">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Variável</th>
+                                    <th>Estratégia</th>
+                                    <th>Limiar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Volumes / Quantidades</td>
+                                    <td><span class="badge badge-purple">Winsorização</span></td>
+                                    <td>Z-score &gt; 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Produção de Energia</td>
+                                    <td><span class="badge badge-purple">Winsorização</span></td>
+                                    <td>Z-score &gt; 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Rácios e Percentagens</td>
+                                    <td><span class="badge badge-blue">Imp. Mediana</span></td>
+                                    <td>Z-score &gt; 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Variáveis Derivadas</td>
+                                    <td><span class="badge badge-green">Verificação</span></td>
+                                    <td>Validação física</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== EDA ==================== -->
+        <section class="section" id="eda">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Análise Exploratória de <span class="gradient-text">Dados</span></h1>
+                    <p class="section-subtitle">Distribuições, correlações e padrões identificados nos dados dos PTDs
+                        (Gráficos Originais)</p>
+                </div>
+            </div>
+
+            <!-- Gráficos Extraídos do Python -->
+            <div class="two-col-grid fade-in">
+                <!-- Mapa Geográfico -->
+                <div class="glass-card">
+                    <h3 class="card-title">Distribuição de Registos Geográficos</h3>
+                    <div style="display: flex; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 1rem; cursor: zoom-in;"
+                        onclick="openImageModal(this.querySelector('img').src)">
+                        <img src="assets/mapa.png" alt="Mapa de Distribuição"
+                            style="max-width: 100%; height: auto; object-fit: contain;">
+                    </div>
+                </div>
+
+                <!-- Matriz de Correlação -->
+                <div class="glass-card">
+                    <h3 class="card-title">Matriz de Correlação de Pearson (Global)</h3>
+                    <div style="display: flex; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 1rem; cursor: zoom-in;"
+                        onclick="openImageModal(this.querySelector('img').src)">
+                        <img src="assets/heatmap.png" alt="Heatmap de Correlações"
+                            style="max-width: 100%; height: auto; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col-grid fade-in" style="margin-top: 1.5rem;">
+                <!-- Outliers -->
+                <div class="glass-card">
+                    <h3 class="card-title">Distribuição de Variáveis Numéricas e Outliers (Boxplots)</h3>
+                    <div style="display: flex; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 1rem; max-height: 500px; overflow-y: auto; cursor: zoom-in;"
+                        onclick="openImageModal(this.querySelector('img').src)">
+                        <img src="assets/boxplots.png" alt="Boxplots Numéricos"
+                            style="width: 100%; height: auto; object-fit: contain;">
+                    </div>
+                </div>
+
+                <!-- Arvore de Decisao -->
+                <div class="glass-card">
+                    <h3 class="card-title">Estrutura Lógica da Árvore de Decisão</h3>
+                    <div style="display: flex; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 1rem; max-height: 500px; overflow-y: auto; cursor: zoom-in;"
+                        onclick="openImageModal(this.querySelector('img').src)">
+                        <img src="assets/arvore.png" alt="Visualização da Árvore"
+                            style="width: 100%; height: auto; object-fit: contain;">
+                    </div>
+                </div>
+
+                <!-- Histogramas -->
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <h3 class="card-title">Distribuição Assimétrica (Histogramas Gerais)</h3>
+                    <div style="display: flex; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 1rem; max-height: 500px; overflow-y: auto; cursor: zoom-in;"
+                        onclick="openImageModal(this.querySelector('img').src)">
+                        <img src="assets/histogramas.png" alt="Histogramas"
+                            style="width: 100%; height: auto; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key EDA findings -->
+            <div class="kpi-grid four-col" style="margin-top: 2rem;">
+                <div class="kpi-card mini" style="--delay: 0.1s">
+                    <div class="kpi-content">
+                        <span class="kpi-value small">67%</span>
+                        <span class="kpi-label">LED_Ratio Médio</span>
+                    </div>
+                </div>
+                <div class="kpi-card mini" style="--delay: 0.15s">
+                    <div class="kpi-content">
+                        <span class="kpi-value small">51%</span>
+                        <span class="kpi-label">Utilização Média</span>
+                    </div>
+                </div>
+                <div class="kpi-card mini" style="--delay: 0.2s">
+                    <div class="kpi-content">
+                        <span class="kpi-value small">28%</span>
+                        <span class="kpi-label">Rate Ineficiência</span>
+                    </div>
+                </div>
+                <div class="kpi-card mini" style="--delay: 0.25s">
+                    <div class="kpi-content">
+                        <span class="kpi-value small">94</span>
+                        <span class="kpi-label">Clientes/PTD (média)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Correlation & Distribution Charts -->
+            <div class="two-col-grid fade-in">
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Correlação com PFolga_PTD (Target Regressão)</h3>
+                    <div class="chart-container" style="height: 450px;">
+                        <div id="corrChart" class="plotly-chart" style="width:100%; height:100%; cursor: zoom-in;">
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Distribuição por Tipo Construtivo</h3>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="tipoChart" class="zoomable-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col-grid fade-in">
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Distribuição de Util_Decimal</h3>
+                    <div class="chart-container" style="min-height: 350px;">
+                        <div id="utilDistChart" class="plotly-chart" style="width:100%; height:100%; cursor: zoom-in;">
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Testes de Independência (ANOVA / Spearman)</h3>
+                    <div class="data-table-wrapper scrollable expandable-table" style="cursor: zoom-in;"
+                        title="Clica para expandir">
+                        <table class="data-table compact">
+                            <thead>
+                                <tr>
+                                    <th>Variável</th>
+                                    <th>Tipo</th>
+                                    <th>Teste</th>
+                                    <th>Estatística</th>
+                                    <th>p-value</th>
+                                    <th>Manter</th>
+                                </tr>
+                            </thead>
+                            <tbody id="independenceTable">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDA Insights -->
+            <div class="glass-card fade-in insight-card">
+                <h3 class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width:20px;height:20px;margin-right:8px">
+                        <path d="M12 2a10 10 0 0110 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z" />
+                        <path d="M12 6v6l4 2" />
+                    </svg>
+                    Insights Principais da EDA
+                </h3>
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <div class="insight-icon">🗺️</div>
+                        <h4>Concentração Litoral</h4>
+                        <p>Forte concentração de PTDs na faixa litoral, com focos na Grande Lisboa e Grande Porto.
+                            Interior com densidade muito menor.</p>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon">💡</div>
+                        <h4>Adoção LED Avançada</h4>
+                        <p>Mediana do LED_Ratio a 72%, P75 acima de 91%. Modernização da iluminação já está fortemente
+                            instalada.</p>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon">⚡</div>
+                        <h4>Capacidade Disponível</h4>
+                        <p>Taxa de utilização média ~51%, indicando boas margens de manobra na rede para absorver novas
+                            cargas (VE).</p>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon">📊</div>
+                        <h4>Assimetria Severa</h4>
+                        <p>N_Clientes e Potência Instalada com distribuições fortemente enviesadas à direita — PTDs
+                            urbanos/industriais massivos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== REGRESSION ==================== -->
+        <section class="section" id="regression">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Modelos de <span class="gradient-text">Regressão</span></h1>
+                    <p class="section-subtitle">Previsão da Folga de Rede (PFolga_PTD) — capacidade de cada PTD para
+                        absorver mobilidade elétrica</p>
+                </div>
+            </div>
+
+            <!-- Regression Models Tabs -->
+            <div class="tabs-container fade-in">
+                <div class="tabs">
+                    <button class="tab active" data-tab="reg-simple">Linear Simples</button>
+                    <button class="tab" data-tab="reg-multi">Linear Múltipla</button>
+                    <button class="tab" data-tab="reg-tree">Árvore</button>
+                    <button class="tab" data-tab="reg-svm">SVM</button>
+                    <button class="tab" data-tab="reg-nn">Rede Neuronal</button>
+                </div>
+
+                <!-- Simple Regression -->
+                <div class="tab-content active" id="reg-simple">
+                    <div class="two-col-grid">
+                        <div class="glass-card">
+                            <h3 class="card-title">Regressão Linear Simples</h3>
+                            <div class="model-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Variável Explicativa</span>
+                                    <span class="detail-value">Cap_PTD_kVA</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Justificação</span>
+                                    <span class="detail-value">Maior correlação com PFolga_PTD</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Método</span>
+                                    <span class="detail-value">K-Fold Cross Validation (K=5)</span>
+                                </div>
+                            </div>
+                            <div class="formula-box">
+                                <span class="formula-label">Função Linear Resultante</span>
+                                <code>PFolga_PTD = (β₁ × Cap_PTD_kVA) + β₀</code>
+                            </div>
+                            <div class="metrics-row">
+                                <div class="metric">
+                                    <span class="metric-label">MAE</span>
+                                    <span class="metric-value">~Erro médio absoluto</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">RMSE</span>
+                                    <span class="metric-value">~Raiz quadrada do erro médio</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card">
+                            <h3 class="card-title">Diagrama de Dispersão + Reta</h3>
+                            <div class="chart-container">
+                                <canvas id="scatterRegSimple" class="zoomable-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multiple Regression -->
+                <div class="tab-content" id="reg-multi">
+                    <div class="glass-card">
+                        <h3 class="card-title">Regressão Linear Múltipla</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">Preprocessamento</span><span
+                                    class="detail-value">RobustScaler + OrdinalEncoder + OneHotEncoder</span></div>
+                            <div class="detail-row"><span class="detail-label">Validação</span><span
+                                    class="detail-value">K-Fold (K=5) + Train/Test 80/20</span></div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; color: var(--text-primary);">Top 10 Features (por coeficiente
+                            absoluto)</h4>
+                        <div class="chart-container" style="height:480px; padding-bottom: 20px;">
+                            <div id="featureImportanceRegChart" class="plotly-chart"
+                                style="width:100%; height:100%; cursor: zoom-in;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision Tree -->
+                <div class="tab-content" id="reg-tree">
+                    <div class="glass-card">
+                        <h3 class="card-title">Árvore de Regressão</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">Max Depth</span><span
+                                    class="detail-value">5</span></div>
+                            <div class="detail-row"><span class="detail-label">Min Samples Split</span><span
+                                    class="detail-value">10</span></div>
+                            <div class="detail-row"><span class="detail-label">Min Samples Leaf</span><span
+                                    class="detail-value">5</span></div>
+                        </div>
+                        <div class="tree-visual">
+                            <div class="tree-node root">Cap_PTD_kVA</div>
+                            <div class="tree-branches">
+                                <div class="tree-branch">
+                                    <div class="tree-node left">≤ thresh</div>
+                                    <div class="tree-branches">
+                                        <div class="tree-branch">
+                                            <div class="tree-node leaf">Low PFolga</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node leaf">Med PFolga</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tree-branch">
+                                    <div class="tree-node right">&gt; thresh</div>
+                                    <div class="tree-branches">
+                                        <div class="tree-branch">
+                                            <div class="tree-node leaf">Med PFolga</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node leaf">High PFolga</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SVM -->
+                <div class="tab-content" id="reg-svm">
+                    <div class="glass-card">
+                        <h3 class="card-title">SVM Regressão</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">Kernels Testados</span><span
+                                    class="detail-value">Linear, RBF</span></div>
+                            <div class="detail-row"><span class="detail-label">Melhor Kernel</span><span
+                                    class="detail-value badge badge-purple">RBF</span></div>
+                            <div class="detail-row"><span class="detail-label">Optimização</span><span
+                                    class="detail-value">GridSearchCV (K=5)</span></div>
+                            <div class="detail-row"><span class="detail-label">Max Iter</span><span
+                                    class="detail-value">10 000</span></div>
+                        </div>
+                        <div class="info-callout">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width:20px;height:20px;flex-shrink:0">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                            <p>O SVM com datasets de 70k+ registos exige muita memória e tempo de computação, limitando
+                                a otimização dos hiperparâmetros. O kernel RBF demonstrou melhor capacidade de capturar
+                                relações não-lineares.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neural Network -->
+                <div class="tab-content" id="reg-nn">
+                    <div class="glass-card">
+                        <h3 class="card-title">Rede Neuronal (MLPRegressor)</h3>
+                        <div class="nn-configs">
+                            <div class="nn-config-card">
+                                <h4>Simples</h4>
+                                <div class="nn-arch">(32,)</div>
+                                <div class="nn-params">LR: 0.001 · Early Stop ✓</div>
+                            </div>
+                            <div class="nn-config-card highlight">
+                                <h4>Profundo ★</h4>
+                                <div class="nn-arch">(128, 64, 32)</div>
+                                <div class="nn-params">LR: 0.001 · Early Stop ✓</div>
+                            </div>
+                            <div class="nn-config-card">
+                                <h4>Regularizado</h4>
+                                <div class="nn-arch">(128, 64, 32)</div>
+                                <div class="nn-params">LR: 0.001 · α=0.01 · ES ✓</div>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="margin-top: 1.5rem">
+                            <canvas id="nnLossRegChart" class="zoomable-chart" style="cursor: zoom-in;"
+                                title="Clica para expandir"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regression Comparison Chart & Table -->
+            <div class="two-col-grid fade-in">
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Comparação de Erros — Todos os Modelos de Regressão</h3>
+                    <div class="chart-container" style="height: 350px">
+                        <div id="regressionCompareChart" class="plotly-chart"
+                            style="width:100%; height:100%; cursor: zoom-in;"></div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title">Tabela Comparativa — Regressão (μ=média, σ=desvio padrão)</h3>
+                    <div class="data-table-wrapper expandable-table" style="cursor: zoom-in;"
+                        title="Clica para expandir">
+                        <table class="data-table compact">
+                            <thead>
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>MAE μ</th>
+                                    <th>MAE σ</th>
+                                    <th>RMSE μ</th>
+                                    <th>RMSE σ</th>
+                                    <th>Tempo(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regCompTable">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Curves & Statistical Test -->
+            <div class="two-col-grid fade-in">
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Curvas de Aprendizagem (2 Melhores)</h3>
+                    <div class="chart-container">
+                        <canvas id="learningCurveRegChart" class="zoomable-chart" style="cursor: zoom-in;"
+                            title="Clica para expandir"></canvas>
+                    </div>
+                    <div class="info-callout" style="margin-top:1rem">
+                        <p><strong>Interpretação:</strong> Se treino e validação convergem → treino eficiente. Se
+                            validação >> treino → overfitting.</p>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title">Teste de Wilcoxon (α = 5%)</h3>
+                    <div class="stat-test-result expandable-table" style="cursor: zoom-in;" title="Clica para expandir">
+                        <div class="test-header">
+                            <span class="test-name">Árvore de Regressão vs Reg. Linear Múltipla</span>
+                        </div>
+                        <div class="test-metrics">
+                            <div class="test-metric">
+                                <span class="test-metric-label">Estatística W</span>
+                                <span class="test-metric-value" id="wilcoxonW">0.0</span>
+                            </div>
+                            <div class="test-metric">
+                                <span class="test-metric-label">P-value</span>
+                                <span class="test-metric-value" id="wilcoxonP">0.0625</span>
+                            </div>
+                        </div>
+                        <div class="test-conclusion" id="wilcoxonConclusion">
+                            <p>Apesar do p-value &gt; 0.05 (limite matemático de 5 folds), a <strong>Estatística W = 0.0</strong> prova que a Árvore de Regressão obteve um erro menor que a Regressão Linear Múltipla em <strong>100% dos folds</strong>, demonstrando superioridade empírica absoluta.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:220px; margin-top: 1rem">
+                        <canvas id="maeFoldChart" class="zoomable-chart" style="cursor: zoom-in;"
+                            title="Clica para expandir"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CLASSIFICATION ==================== -->
+        <section class="section" id="classification">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Modelos de <span class="gradient-text">Classificação</span></h1>
+                    <p class="section-subtitle">Previsão do nível de ocupação da rede (utilizRede: baixo · médio · alto)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Class Distribution -->
+            <div class="glass-card fade-in">
+                <h3 class="card-title">Discretização de Util_Decimal → utilizRede</h3>
+                <div class="two-col-grid" style="padding:0">
+                    <div class="chart-container">
+                        <div id="classDistChart" class="plotly-chart" style="width:100%; height:100%; cursor: zoom-in;">
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:1rem">
+                        <div class="class-legend">
+                            <div class="class-badge low">Baixo</div>
+                            <span>≤ Q33 (~0.39)</span>
+                        </div>
+                        <div class="class-legend">
+                            <div class="class-badge medium">Médio</div>
+                            <span>Q33 – Q67</span>
+                        </div>
+                        <div class="class-legend">
+                            <div class="class-badge high">Alto</div>
+                            <span>&gt; Q67 (~0.59)</span>
+                        </div>
+                        <div class="info-callout" style="margin-top:0.5rem">
+                            <p>Discretização por <strong>quantis</strong> (terços) garante classes equilibradas (~33%
+                                cada), evitando <em>class imbalance</em>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classification Models -->
+            <div class="tabs-container fade-in">
+                <div class="tabs">
+                    <button class="tab active" data-tab="clf-dt">Árvore de Decisão</button>
+                    <button class="tab" data-tab="clf-nn">Rede Neuronal</button>
+                    <button class="tab" data-tab="clf-svm">SVM</button>
+                    <button class="tab" data-tab="clf-knn">KNN</button>
+                </div>
+
+                <div class="tab-content active" id="clf-dt">
+                    <div class="glass-card">
+                        <h3 class="card-title">Árvore de Decisão (Classificação)</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">Max Depth</span><span
+                                    class="detail-value">6</span></div>
+                            <div class="detail-row"><span class="detail-label">Min Samples Leaf</span><span
+                                    class="detail-value">10</span></div>
+                            <div class="detail-row"><span class="detail-label">Class Weight</span><span
+                                    class="detail-value">balanced</span></div>
+                        </div>
+                        <h4 style="margin-top:1.5rem; color: var(--text-primary)">Feature Importance (Top 15 — Gini)
+                        </h4>
+                        <div class="chart-container" style="height: 480px; padding-bottom: 20px;">
+                            <div id="featureImportanceClfChart" class="plotly-chart"
+                                style="width:100%; height:100%; cursor: zoom-in;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="clf-nn">
+                    <div class="glass-card">
+                        <h3 class="card-title">Rede Neuronal (MLPClassifier)</h3>
+                        <div class="nn-configs">
+                            <div class="nn-config-card">
+                                <h4>Simples</h4>
+                                <div class="nn-arch">(64,)</div>
+                                <div class="nn-params">LR: 0.001 · Early Stop ✓</div>
+                            </div>
+                            <div class="nn-config-card highlight">
+                                <h4>Profundo ★</h4>
+                                <div class="nn-arch">(256, 128, 64)</div>
+                                <div class="nn-params">LR: 0.001 · Early Stop ✓</div>
+                            </div>
+                            <div class="nn-config-card">
+                                <h4>Regularizado</h4>
+                                <div class="nn-arch">(128, 64)</div>
+                                <div class="nn-params">LR: 0.001 · α=0.001 · ES ✓</div>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="margin-top:1.5rem">
+                            <canvas id="nnLossClfChart" class="zoomable-chart" style="cursor: zoom-in;"
+                                title="Clica para expandir"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="clf-svm">
+                    <div class="glass-card">
+                        <h3 class="card-title">SVM Classificação</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">Kernels Testados</span><span
+                                    class="detail-value">Linear, RBF</span></div>
+                            <div class="detail-row"><span class="detail-label">Melhor Kernel</span><span
+                                    class="detail-value badge badge-purple">RBF</span></div>
+                            <div class="detail-row"><span class="detail-label">Optimização</span><span
+                                    class="detail-value">GridSearchCV (K=5)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="clf-knn">
+                    <div class="glass-card">
+                        <h3 class="card-title">K-Vizinhos-Mais-Próximos (KNN)</h3>
+                        <div class="model-details">
+                            <div class="detail-row"><span class="detail-label">K testados</span><span
+                                    class="detail-value">3, 5, 7, 11, 15, 21</span></div>
+                            <div class="detail-row"><span class="detail-label">Melhor K</span><span
+                                    class="detail-value badge badge-green">5</span></div>
+                        </div>
+                        <div class="chart-container" style="margin-top:1.5rem">
+                            <canvas id="knnKChart" class="zoomable-chart" style="cursor: zoom-in;"
+                                title="Clica para expandir"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classification Metrics Comparison -->
+            <div class="glass-card fade-in chart-card">
+                <h3 class="card-title">Métricas de Classificação — Todos os Modelos</h3>
+                <div class="chart-container" style="height: 380px">
+                    <div id="clfMetricsChart" class="plotly-chart" style="width:100%; height:100%; cursor: zoom-in;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== COMPARISON ==================== -->
+        <section class="section" id="comparison">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Comparação <span class="gradient-text">Detalhada</span></h1>
+                    <p class="section-subtitle">Análise cruzada de todos os modelos, curvas de aprendizagem e testes
+                        estatísticos</p>
+                </div>
+            </div>
+
+            <!-- Combined Metrics Table -->
+            <div class="glass-card fade-in">
+                <h3 class="card-title">Tabela Comparativa — Classificação (μ=média, σ=desvio padrão)</h3>
+                <div class="data-table-wrapper expandable-table" style="cursor: zoom-in;" title="Clica para expandir">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th>
+                                <th>Acc μ</th>
+                                <th>Acc σ</th>
+                                <th>Prec μ</th>
+                                <th>Prec σ</th>
+                                <th>Rec μ</th>
+                                <th>Rec σ</th>
+                                <th>F1 μ</th>
+                                <th>F1 σ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clfCompTable">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Learning Curves Classification -->
+            <div class="two-col-grid fade-in">
+                <div class="glass-card chart-card">
+                    <h3 class="card-title">Curvas de Aprendizagem — Classificação</h3>
+                    <div class="chart-container">
+                        <canvas id="learningCurveClfChart" class="zoomable-chart" style="cursor: zoom-in;"
+                            title="Clica para expandir"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title">Teste de Wilcoxon — Classificação (α=5%)</h3>
+                    <div class="stat-test-result expandable-table" style="cursor: zoom-in;" title="Clica para expandir">
+                        <div class="test-header">
+                            <span class="test-name">SVM vs Árvore de Decisão</span>
+                        </div>
+                        <div class="test-metrics">
+                            <div class="test-metric">
+                                <span class="test-metric-label">Estatística W</span>
+                                <span class="test-metric-value" id="wilcoxonClfW">0.0</span>
+                            </div>
+                            <div class="test-metric">
+                                <span class="test-metric-label">P-value</span>
+                                <span class="test-metric-value" id="wilcoxonClfP">0.0625</span>
+                            </div>
+                        </div>
+                        <div class="test-conclusion" id="wilcoxonClfConclusion">
+                            <p>Tal como na regressão, o limite de 5 folds impede um p-value &lt; 0.05. No entanto, a <strong>Estatística W = 0.0</strong> comprova que o modelo SVM superou a Árvore de Decisão no F1-Score em <strong>todos os cruzamentos</strong> de validação.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:220px; margin-top:1rem">
+                        <canvas id="f1FoldChart" class="zoomable-chart" style="cursor: zoom-in;"
+                            title="Clica para expandir"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Radar Comparison -->
+            <div class="glass-card fade-in chart-card">
+                <h3 class="card-title">Comparação Radar — Todos os Modelos</h3>
+                <div class="glass-card"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="radarChartContainer"
+                        style="width: 100%; max-width: 450px; aspect-ratio: 1; position: relative;">
+                        <canvas id="radarChart" class="zoomable-chart" style="cursor: zoom-in;"
+                            title="Clica para expandir"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CONCLUSIONS ==================== -->
+        <section class="section" id="conclusions">
+            <div class="section-header">
+                <div class="section-header-text">
+                    <h1>Conclusões e <span class="gradient-text">Recomendações</span></h1>
+                    <p class="section-subtitle">Limitações identificadas e estratégias de melhoria propostas</p>
+                </div>
+            </div>
+
+            <div class="glass-card fade-in conclusion-card">
+                <h3 class="card-title">🎯 Conclusões Gerais</h3>
+                <div class="conclusion-grid">
+                    <div class="conclusion-item success">
+                        <div class="conclusion-icon">✅</div>
+                        <h4>Regressão</h4>
+                        <p>Os modelos demonstraram capacidade de prever a PFolga_PTD com erro aceitável. A
+                            <strong>Árvore de Regressão</strong> e a <strong>Regressão Linear Múltipla</strong>
+                            apresentaram os melhores desempenhos.</p>
+                    </div>
+                    <div class="conclusion-item success">
+                        <div class="conclusion-icon">✅</div>
+                        <h4>Classificação</h4>
+                        <p>A classificação do nível de utilização da rede alcançou bons resultados. A
+                            <strong>SVM</strong> e a <strong>Árvore de Decisão</strong> destacaram-se nas métricas de
+                            F1-score.</p>
+                    </div>
+                    <div class="conclusion-item info">
+                        <div class="conclusion-icon">💡</div>
+                        <h4>Variáveis Chave</h4>
+                        <p><strong>Cap_PTD_kVA</strong> e <strong>Pot_Contratada_kVA</strong> são as variáveis mais
+                            relevantes tanto na regressão como na classificação, confirmando a importância da capacidade
+                            instalada.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col-grid fade-in">
+                <div class="glass-card">
+                    <h3 class="card-title">⚠️ Limitações Identificadas</h3>
+                    <div class="limitations-list">
+                        <div class="limitation-item">
+                            <span class="limitation-tag data">Dados</span>
+                            <p><strong>Desequilíbrio geográfico</strong> — Concentração de PTDs no litoral pode enviesar
+                                modelos para padrões urbanos.</p>
+                        </div>
+                        <div class="limitation-item">
+                            <span class="limitation-tag data">Dados</span>
+                            <p><strong>Ausência de dados temporais</strong> — Dataset estático, sem captura de variações
+                                sazonais.</p>
+                        </div>
+                        <div class="limitation-item">
+                            <span class="limitation-tag data">Dados</span>
+                            <p><strong>Valores estimados</strong> — Variáveis derivadas (PFolga, D_PTD) dependem de
+                                pressupostos.</p>
+                        </div>
+                        <div class="limitation-item">
+                            <span class="limitation-tag model">Modelo</span>
+                            <p><strong>SVM convergência lenta</strong> — Datasets 70k+ exigem muita memória, limitando
+                                otimização.</p>
+                        </div>
+                        <div class="limitation-item">
+                            <span class="limitation-tag model">Modelo</span>
+                            <p><strong>NN sem k-fold nativo</strong> — Avaliação baseada em split fixo pode introduzir
+                                variância.</p>
+                        </div>
+                        <div class="limitation-item">
+                            <span class="limitation-tag model">Modelo</span>
+                            <p><strong>Alta dimensionalidade</strong> — One-hot encoding gera centenas de colunas
+                                esparsas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title">🚀 Estratégias de Melhoria</h3>
+                    <div class="strategies-list">
+                        <div class="strategy-item">
+                            <div class="strategy-number">1</div>
+                            <div class="strategy-content">
+                                <h4>Engenharia de Features</h4>
+                                <p>Criar variáveis de densidade de PTDs por concelho e índices de urbanização.</p>
+                            </div>
+                        </div>
+                        <div class="strategy-item">
+                            <div class="strategy-number">2</div>
+                            <div class="strategy-content">
+                                <h4>Ensemble Methods</h4>
+                                <p>Testar Random Forest e XGBoost que geralmente superam árvores simples e SVM.</p>
+                            </div>
+                        </div>
+                        <div class="strategy-item">
+                            <div class="strategy-number">3</div>
+                            <div class="strategy-content">
+                                <h4>Oversampling / SMOTE</h4>
+                                <p>Mitigar eventuais desequilíbrios de classes na classificação.</p>
+                            </div>
+                        </div>
+                        <div class="strategy-item">
+                            <div class="strategy-number">4</div>
+                            <div class="strategy-content">
+                                <h4>Dados Temporais</h4>
+                                <p>Incorporar séries temporais de consumo para capturar padrões sazonais.</p>
+                            </div>
+                        </div>
+                        <div class="strategy-item">
+                            <div class="strategy-number">5</div>
+                            <div class="strategy-content">
+                                <h4>Redução de Dimensionalidade</h4>
+                                <p>Aplicar PCA sobre features one-hot antes de SVM para acelerar treino.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Zoom Modal -->
+        <div class="chart-modal" id="chartModal">
+            <div class="chart-modal-content">
+                <button class="chart-modal-close" id="chartModalClose">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+                <div class="chart-modal-body" style="position: relative; width: 100%; height: 100%; overflow: auto;">
+                    <div id="modalCanvasWrapper" style="display: none; width: 90%; height: 90%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        <canvas id="modalCanvas" style="width: 100%; height: 100%;"></canvas>
+                    </div>
+                    <div id="modalPlotly"
+                        style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;"></div>
+                    <div id="modalTable"
+                        style="display: none; width: 100%; height: auto; background: var(--surface); padding: 1rem; border-radius: 8px;">
+                    </div>
+                    <img id="modalImage"
+                        style="display: none; width: 100%; height: 100%; object-fit: contain; background: #fff; border-radius: 8px; padding: 1rem;">
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for Fullscreen Image -->
+    <div id="imageModal" class="modal"
+        style="background-color: rgba(15, 23, 42, 0.95); display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; justify-content: center; align-items: center;">
+        <span
+            style="position: absolute; top: 20px; right: 40px; color: #f8fafc; font-size: 40px; font-weight: bold; cursor: pointer;"
+            onclick="document.getElementById('imageModal').style.display='none'">&times;</span>
+        <img id="modalImage"
+            style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);"
+            src="">
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        function openImageModal(src) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+    </script>
+</body>
+
+</html>
